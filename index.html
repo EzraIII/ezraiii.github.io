@@ -18,28 +18,40 @@
                     levelTimePairElement.innerText = level;
                     levelTimePairElement.id = level;
                     document.body.appendChild(levelTimePairElement);
-                    get(levelsArr.find(obj => obj.name === level).links.find(obj => obj.rel === "records").uri).then(ILArr => {
-                        // console.log(level, ILArr);
-                        const ILTime = ILArr[0].runs[0].run.times.primary_t;
-                        totalTime += ILTime;
-                        document.getElementById(level).innerText = `${level} : ${ILTime}`;
-                    }).catch(err => {
-                        console.log(level);
-                        console.log(err.message);
-                        document.getElementById(level).innerText = `${level} : ERROR`;
-                        document.body.style = "color:#D00;";
-                    }).finally(() => {
-                        processedLevels++;
-                        if(processedLevels === listOfLevels.length) {
-                            document.getElementsByTagName("h1")[0].innerText = `${Math.floor(totalTime/60)}:${(totalTime%60).toFixed(2).length<5?`0${(totalTime%60).toFixed(2)}`:(totalTime%60).toFixed(2)}`;
-                        }
+                    const levelUrl = levelsArr.find(obj => obj.name === level).links[0].uri;
+                    const variableObj = {};
+                    get(`${levelUrl}/variables`).then(variableArr => {
+                        for(let o of variableArr) if(o["is-subcategory"]) variableObj[o.id] = o.values.default;
+                    }).then(() => {
+                        get(`${levelUrl}/records`).then(ilArr => {
+                            const ilTime = ilArr[0].runs.find(ilObj => {
+                                const keysArr = Object.keys(variableObj);
+                                for(let i = 0; i < keysArr.length; i++){
+                                    const key = keysArr[i];
+                                    if(ilObj.run.values[key] !== variableObj[key]) return false;
+                                }
+                                return true;
+                            }).run.times.primary_t;
+                            totalTime += ilTime;
+                            document.getElementById(level).innerText = `${level} : ${ilTime}`;
+                        }).catch(err => {
+                            console.log(level);
+                            console.log(err.message);
+                            document.getElementById(level).innerText = `${level} : ERROR`;
+                            document.body.style = "color:#D00;";
+                        }).finally(() => {
+                            processedLevels++;
+                            if(processedLevels === listOfLevels.length) {
+                                document.getElementsByTagName("h1")[0].innerText = `${Math.floor(totalTime/60)}:${(totalTime%60).toFixed(2).length<5?`0${(totalTime%60).toFixed(2)}`:(totalTime%60).toFixed(2)}`;
+                            }
+                        })
                     });
                 }
             })
     </script>
 </head>
 <body>
-    <h3>There is currently a bug where it pulls the best time from the level regardless of the subcategories. This means that it's pulling a time from E17 that isn't possible in an Any% run. This is currently being worked on</h2>
+    <h3>There is currently a bug where it fails to pull the best time from E14. I'm not yet sure how to fix this as I can't figure out how to pull it manually from the API</h2>
     <h2>WYS IE Any% Sum of Best</h2>
     <h1>Loading</h1>
 </body>
