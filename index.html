@@ -20,20 +20,15 @@
                     levelTimePairElement.innerText = level;
                     levelTimePairElement.id = level;
                     document.body.appendChild(levelTimePairElement);
-                    const levelUrl = levelsArr.find(obj => obj.name === level).links[0].uri;
-                    const variableObj = {};
+                    const levelObj = levelsArr.find(obj => obj.name === level);
+                    const levelUrl = levelObj.links[0].uri;
+                    const levelId = levelObj.id;
+                    const variableQueryArr = [];
                     get(`${levelUrl}/variables`).then(variableArr => {
-                        for(let o of variableArr) if(o["is-subcategory"]) variableObj[o.id] = o.values.default;
+                        for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
                     }).then(() => {
-                        get(`${levelUrl}/records`).then(ilArr => {
-                            const ilTime = ilArr[0].runs.find(ilObj => {
-                                const keysArr = Object.keys(variableObj);
-                                for(let i = 0; i < keysArr.length; i++){
-                                    const key = keysArr[i];
-                                    if(ilObj.run.values[key] !== variableObj[key]) return false;
-                                }
-                                return true;
-                            }).run.times.primary_t;
+                        get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/xd150o72?${variableQueryArr.join("&")}`).then(ilObj => {
+                            const ilTime = ilObj.runs[0].run.times.primary_t;
                             totalTime += ilTime;
                             document.getElementById(level).innerText = `${level} : ${ilTime}`;
                         }).catch(err => {
@@ -57,7 +52,6 @@
     </script>
 </head>
 <body>
-    <h3>If the text is red, an error has occured and the time shown is not to be trusted. There is currently a bug where it fails to pull the best time from E14. I'm not yet sure how to fix this as I can't figure out how to pull it manually from the API.</h2>
     <h2>WYS IE Any% Sum of Best</h2>
     <h1>Loading</h1>
 </body>
