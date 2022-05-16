@@ -1,0 +1,29 @@
+:root {
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.segment {
+    display: flex;
+    flex-direction: column;
+
+    width: 100px;
+    max-width: 20%;
+}
+
+.segment-label {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.segment-time {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
