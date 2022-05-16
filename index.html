@@ -42,6 +42,10 @@
             let totalTime = loadingTimeEnteringLevel*(levelCount-1);       
             const segmentTimes = [];
 
+            // player leaderboard
+            const playerRecords = {};
+            const untiedPlayerRecords = {};
+
             // helper funcs
             const get = async (url) => await fetch(url).then(resp => resp.json()).then(resp => resp.data);
             const formatTime = (t) => `${Math.floor(t/60)}:${(t%60).toFixed(2).length<5?`0${(t%60).toFixed(2)}`:(t%60).toFixed(2)}`;
@@ -105,11 +109,26 @@
                             for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
                             return variableQueryArr;
                         }).then(variableQueryArr => {
-                            return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?${variableQueryArr.join("&")}`).then(ilObj => {
+                            return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`).then(ilObj => {
                                 const ilTime = ilObj.runs[0].run.times.primary_t;
                                 totalTime += ilTime;
                                 segmentTime += ilTime;
                                 levelTimePairElement.innerText = `${level} : ${ilTime}`;
+
+                                ilObj.runs.forEach(run => {
+                                    const playerId = run.run.players[0].id;
+                                    const playerName = ilObj.players.data.find(p => p.id === playerId).names.international;
+                                    
+                                    if(!playerRecords[playerName]) playerRecords[playerName] = 0;
+                                    playerRecords[playerName]++;
+
+                                    if(ilObj.runs.length === 1) {
+                                        if(!untiedPlayerRecords[playerName]) untiedPlayerRecords[playerName] = 0;
+                                        untiedPlayerRecords[playerName]++;
+                                    }
+                                });
+
+                                console.log(ilObj.players.data);
                             }).catch(err => {
                                 error = true;
                                 console.log(level);
@@ -144,7 +163,33 @@
                 timeCalcText.innerText = `Time Calculation: ${segmentTimes.map(formatTime).join(" + ")} + 4 * ${loadingTimeEnteringLevel}`;
                 loadingTimeText.innerText = `Loading Time and Time in Level Select : ${levelCount-1}*${loadingTimeEnteringLevel} + ${levelSelectTripsCount}*${timeSpentPerTripInLevelSelect} = ${((levelCount-1)*loadingTimeEnteringLevel + levelSelectTripsCount*timeSpentPerTripInLevelSelect).toFixed(2)}`;
                 
-                console.log(formatTime(segmentTimes.reduce((prev, curr) => prev + curr) + 4 * loadingTimeEnteringLevel));
+                // display record count leaderboards
+                const createLeaderboard = (records, title, anchor=document.body) => {
+                    const board = document.createElement("div");
+                    board.className = 'leaderboard-container';
+                    
+                    const titleElement = document.createElement("h2");
+                    titleElement.className = 'leaderboard-title';
+                    titleElement.innerText = title;
+                    board.appendChild(titleElement);
+
+                    let currPos = 1, prevCount = -1;
+                    Object.entries(records).sort(([_, a], [__, b]) => b-a).forEach(([name, count], i) => {
+                        if(prevCount !== count) currPos = i+1;
+
+                        const row = document.createElement("div");
+                        row.className = 'leaderboard-row';
+                        row.innerText = `[${currPos}] ${name}: ${count}`;
+                        board.appendChild(row);
+
+                        prevCount = count;
+                    });
+
+                    anchor.appendChild(board);
+                }
+
+                createLeaderboard(playerRecords, "Total Records Per Player");
+                createLeaderboard(untiedPlayerRecords, "Total Untied Records Per Player");
             })
         });
     </script>
