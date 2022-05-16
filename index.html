@@ -4,59 +4,149 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles.css">
     <title>WYS IE Any% Sum of Best</title>
     <script>
-        const get = async (url) => await fetch(url).then(resp => resp.json()).then(resp => resp.data);
-        let error = false;
-        get("https://www.speedrun.com/api/v1/games/9do8nro1/levels").then(levelsArr => {
-                const listOfLevels = ["A01", "A01.1", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12", "A13", "A14", "A15", "A16", "A17", "A18", "A19", "A20", "A21", "B01", "B02", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19", "C01", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20", "C21", "C22", "D01", "D05", "D06", "D07", "D08", "D09", "D10", "D11", "D12", "D13", "D14", "D15", "D16", "D17", "D18", "D19", "D20", "E01", "E02", "E05", "E06", "E07", "E08", "E09", "E10", "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19"];
-                const numberOfTimesInLevelSelect = 6;
-                const loadingTimeEnteringLevel = 0.835;
-                const timeSpentPerTripInLevelSelect = 0.845;
-                let totalTime = loadingTimeEnteringLevel*(listOfLevels.length-1) + numberOfTimesInLevelSelect*timeSpentPerTripInLevelSelect;
-                let processedLevels = 0;
-                for(let i = 0; i < listOfLevels.length; i++){
-                    const level = listOfLevels[i];
-                    const levelTimePairElement = document.createElement('p');
-                    levelTimePairElement.innerText = level;
-                    levelTimePairElement.id = level;
-                    document.body.appendChild(levelTimePairElement);
-                    const levelObj = levelsArr.find(obj => obj.name === level);
-                    const levelUrl = levelObj.links[0].uri;
-                    const levelId = levelObj.id;
-                    const variableQueryArr = [];
-                    get(`${levelUrl}/variables`).then(variableArr => {
-                        for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
-                    }).then(() => {
-                        get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?${variableQueryArr.join("&")}`).then(ilObj => {
-                            const ilTime = ilObj.runs[0].run.times.primary_t;
-                            totalTime += ilTime;
-                            document.getElementById(level).innerText = `${level} : ${ilTime}`;
-                        }).catch(err => {
-                            error = true;
-                            console.log(level);
-                            console.log(err.message);
-                            document.getElementById(level).innerText = `${level} : ERROR (${err.message})`;
-                            document.body.style = "color:#D00;";
-                        }).finally(() => {
-                            processedLevels++;
-                            if(processedLevels === listOfLevels.length) {
-                                document.getElementsByTagName("h1")[0].innerText = `${Math.floor(totalTime/60)}:${(totalTime%60).toFixed(2).length<5?`0${(totalTime%60).toFixed(2)}`:(totalTime%60).toFixed(2)}`;
-                                if(error) {
-                                    document.getElementsByTagName("h1")[0].innerText += " + ERROR";
-                                    const errorHeader = document.createElement("h3")
-                                    errorHeader.innerText = "An error has occured. Please try refreshing the page. If that doesn't resolve the issue, please ping @Ezra3#0928 on Discord with any details that you have";
-                                    document.body.prepend(errorHeader);
-                                }
-                                const loadingTime = document.createElement('p');
-                                loadingTime.innerText = `Loading Time and Time in Level Select : ${listOfLevels.length-1}*${loadingTimeEnteringLevel} + ${numberOfTimesInLevelSelect}*${timeSpentPerTripInLevelSelect} = ${((listOfLevels.length-1)*loadingTimeEnteringLevel + numberOfTimesInLevelSelect*timeSpentPerTripInLevelSelect).toFixed(2)}`;
-                                loadingTime.id = level;
-                                document.body.appendChild(loadingTime);
-                            }
-                        })
+        window.addEventListener('load', () => {
+            // constants
+            const segments = {
+                "Chapter A": {
+                    levels: ["A01", "A01.1", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12", "A13", "A14", "A15", "A16", "A17", "A18", "A19", "A20", "A21"],
+                    numberOfTimesInLevelSelect: 1,
+                },
+                "Chapter B": {
+                    levels: ["B01", "B02", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19"],
+                    numberOfTimesInLevelSelect: 1,
+                },
+                "Chapter C": {
+                    levels: ["C01", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20", "C21", "C22"],
+                    numberOfTimesInLevelSelect: 1,
+                },
+                "Chapter D": {
+                    levels: ["D01", "D05", "D06", "D07", "D08", "D09", "D10", "D11", "D12", "D13", "D14", "D15", "D16", "D17", "D18", "D19", "D20"],
+                    numberOfTimesInLevelSelect: 1,
+                },
+                "Chapter E": {
+                    levels: ["E01", "E02", "E05", "E06", "E07", "E08", "E09", "E10", "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19"],
+                    numberOfTimesInLevelSelect: 2,
+                },
+            }
+            
+            const loadingTimeEnteringLevel = 0.835;
+            const timeSpentPerTripInLevelSelect = 0.845; 
+            const levelCount = Object.values(segments).reduce((prev, curr) => prev + curr.levels.length, 0);
+            const levelSelectTripsCount = Object.values(segments).reduce((prev, curr) => prev + curr.numberOfTimesInLevelSelect, 0);
+            
+            // time holders
+            let totalTime = loadingTimeEnteringLevel*(levelCount-1);       
+            const segmentTimes = [];
+
+            // helper funcs
+            const get = async (url) => await fetch(url).then(resp => resp.json()).then(resp => resp.data);
+            const formatTime = (t) => `${Math.floor(t/60)}:${(t%60).toFixed(2).length<5?`0${(t%60).toFixed(2)}`:(t%60).toFixed(2)}`;
+            let error = false;
+
+            // holds Time Calculation text
+            const timeCalcText = document.createElement('p');
+            timeCalcText.className = "calc-time";
+            timeCalcText.innerText = "Loading...";
+            document.body.appendChild(timeCalcText);
+
+            // holds Loading Time text
+            const loadingTimeText = document.createElement('p');
+            loadingTimeText.className = "loading-time";
+            loadingTimeText.innerText = "Loading...";
+            document.body.appendChild(loadingTimeText);
+
+            // holds all segments
+            const container = document.createElement("div");
+            container.className = "container";
+            document.body.appendChild(container);
+        
+            get("https://www.speedrun.com/api/v1/games/9do8nro1/levels").then(levelsArr => {
+                const segmentPromises = [];
+
+                // note: in Will You Snail, segments = chapters
+                Object.entries(segments).forEach(([segmentName, segment], segI) => {
+                    totalTime += segment.numberOfTimesInLevelSelect*timeSpentPerTripInLevelSelect;
+                    const levelPromises = [];
+
+                    // container for this segment (column)
+                    const segmentContainer = document.createElement("div");
+                    segmentContainer.className = "segment";
+                    
+                    // Chapter X text
+                    const segmentHeading = document.createElement("h4");
+                    segmentHeading.className = "segment-label";
+                    segmentHeading.innerText = segmentName;
+                    segmentContainer.appendChild(segmentHeading);
+
+                    // time for each segment
+                    const segmentTimeLabel = document.createElement("p");
+                    segmentTimeLabel.className = "segment-time";
+                    segmentTimeLabel.innerText = "Loading...";
+                    segmentContainer.appendChild(segmentTimeLabel);
+
+                    let segmentTime = (segment.levels.length-1)*loadingTimeEnteringLevel + segment.numberOfTimesInLevelSelect * timeSpentPerTripInLevelSelect;
+                    segment.levels.forEach(level => {
+                        // Create the div to hold the level/time pair
+                        const levelTimePairElement = document.createElement("p");
+                        levelTimePairElement.innerText = level;
+                        levelTimePairElement.id = level;
+                        segmentContainer.appendChild(levelTimePairElement);
+
+                        const levelObj = levelsArr.find(obj => obj.name === level);
+                        const levelUrl = levelObj.links[0].uri;
+                        const levelId = levelObj.id;
+
+                        levelPromises.push(get(`${levelUrl}/variables`).then(variableArr => {
+                            const variableQueryArr = [];
+                            for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
+                            return variableQueryArr;
+                        }).then(variableQueryArr => {
+                            return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?${variableQueryArr.join("&")}`).then(ilObj => {
+                                const ilTime = ilObj.runs[0].run.times.primary_t;
+                                totalTime += ilTime;
+                                segmentTime += ilTime;
+                                levelTimePairElement.innerText = `${level} : ${ilTime}`;
+                            }).catch(err => {
+                                error = true;
+                                console.log(level);
+                                console.log(err.message);
+                                levelTimePairElement.innerText = `${level} : ERROR (${err.message})`;
+                                document.body.style = "color:#D00;";
+                            });
+                        }));
                     });
+
+                    container.appendChild(segmentContainer);
+                    
+                    segmentPromises.push(Promise.all(levelPromises).then(() => {
+                        const formattedTime = formatTime(segmentTime);
+                        segmentTimeLabel.innerText = `${formattedTime}`;
+                        segmentTimes[segI] = segmentTime;
+                    }));
+                });
+
+                return Promise.all(segmentPromises);
+            }).then(() => {            
+                document.getElementsByTagName("h1")[0].innerText = formatTime(totalTime);
+                console.log("h");
+                
+                if(error) {
+                    document.getElementsByTagName("h1")[0].innerText += " + ERROR";
+                    const errorHeader = document.createElement("h3")
+                    errorHeader.innerText = "An error has occured. Please try refreshing the page. If that doesn't resolve the issue, please ping @Ezra3#0928 on Discord with any details that you have";
+                    document.body.prepend(errorHeader);
                 }
+
+                timeCalcText.innerText = `Time Calculation: ${segmentTimes.map(formatTime).join(" + ")} + 4 * ${loadingTimeEnteringLevel}`;
+                loadingTimeText.innerText = `Loading Time and Time in Level Select : ${levelCount-1}*${loadingTimeEnteringLevel} + ${levelSelectTripsCount}*${timeSpentPerTripInLevelSelect} = ${((levelCount-1)*loadingTimeEnteringLevel + levelSelectTripsCount*timeSpentPerTripInLevelSelect).toFixed(2)}`;
+                
+                console.log(formatTime(segmentTimes.reduce((prev, curr) => prev + curr) + 4 * loadingTimeEnteringLevel));
             })
+        });
     </script>
 </head>
 <body>
