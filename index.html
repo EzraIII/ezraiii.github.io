@@ -104,11 +104,17 @@
 
                         const levelAElement = document.createElement("a");
                         levelAElement.innerText = level;
+                        levelAElement.target = "_blank";
                         levelAElement.href = levelObj.weblink;
 
-                        const levelTimeElement = document.createElement("span");
+                        const connector = document.createElement("span");
+                        connector.innerText = " : ";
+
+                        const levelTimeElement = document.createElement("a");
+                        levelTimeElement.target = "_blank";
                         
                         levelTimePairElement.appendChild(levelAElement);
+                        levelTimePairElement.appendChild(connector);
                         levelTimePairElement.appendChild(levelTimeElement);
                         segmentContainer.appendChild(levelTimePairElement);
 
@@ -123,7 +129,9 @@
                                 const ilTime = ilObj.runs[0].run.times.primary_t;
                                 totalTime += ilTime;
                                 segmentTime += ilTime;
-                                levelTimeElement.innerText = ` : ${ilTime}`;
+                                levelTimeElement.innerText = ilTime.toFixed(2);
+                                if(ilObj.runs.length === 1)
+                                    levelTimeElement.href = ilObj.runs[0].run.weblink;
 
                                 ilObj.runs.forEach(run => {
                                     const playerId = run.run.players[0].id;
