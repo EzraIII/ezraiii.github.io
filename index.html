@@ -94,28 +94,34 @@
 
                     let segmentTime = (segment.levels.length-1)*loadingTimeEnteringLevel + segment.numberOfTimesInLevelSelect * timeSpentPerTripInLevelSelect;
                     segment.levels.forEach(level => {
-                        // Create the div to hold the level/time pair
-                        const levelTimePairElement = document.createElement("p");
-                        levelTimePairElement.innerText = level;
-                        levelTimePairElement.id = level;
-                        segmentContainer.appendChild(levelTimePairElement);
-
                         const levelObj = levelsArr.find(obj => obj.name === level);
                         const levelUrl = levelObj.links[0].uri;
                         const levelId = levelObj.id;
+
+                        // Create the div to hold the level/time pair
+                        const levelTimePairElement = document.createElement("p");
+                        levelTimePairElement.id = level;
+
+                        const levelAElement = document.createElement("a");
+                        levelAElement.innerText = level;
+                        levelAElement.href = levelObj.weblink;
+
+                        const levelTimeElement = document.createElement("span");
+                        
+                        levelTimePairElement.appendChild(levelAElement);
+                        levelTimePairElement.appendChild(levelTimeElement);
+                        segmentContainer.appendChild(levelTimePairElement);
 
                         levelPromises.push(get(`${levelUrl}/variables`).then(variableArr => {
                             const variableQueryArr = [];
                             for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
                             return variableQueryArr;
                         }).then(variableQueryArr => {
-                            return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`).then(async ilObj => {
-                                if(!ilObj) ilObj = await get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`);
-                                
+                            return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`).then(ilObj => {
                                 const ilTime = ilObj.runs[0].run.times.primary_t;
                                 totalTime += ilTime;
                                 segmentTime += ilTime;
-                                levelTimePairElement.innerText = `${level} : ${ilTime}`;
+                                levelTimeElement.innerText = ` : ${ilTime}`;
 
                                 ilObj.runs.forEach(run => {
                                     const playerId = run.run.players[0].id;
@@ -129,6 +135,8 @@
                                         untiedPlayerRecords[playerName]++;
                                     }
                                 });
+
+                                console.log(ilObj.players.data);
                             }).catch(err => {
                                 error = true;
                                 console.log(level);
