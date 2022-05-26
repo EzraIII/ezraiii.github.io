@@ -118,6 +118,8 @@
                             return variableQueryArr;
                         }).then(variableQueryArr => {
                             return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`).then(ilObj => {
+                                if(!ilObj) ilObj = await get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`);
+                                
                                 const ilTime = ilObj.runs[0].run.times.primary_t;
                                 totalTime += ilTime;
                                 segmentTime += ilTime;
