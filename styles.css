@@ -3,7 +3,12 @@
 }
 
 a {
-    color: black;
+    color: #000;
+    text-decoration-color: #00F;
+}
+a:hover {
+    color: #444;
+    text-decoration-color: #44F;
 }
 
 .container {
