@@ -111,8 +111,7 @@ window.addEventListener('load', () => {
                 levelPromises.push(get(`${levelUrl}/variables`).then(variableArr => {
                     const variableQueryArr = [];
                     for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
-                    return variableQueryArr;
-                }).then(variableQueryArr => {
+
                     return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`).then(async (ilObj) => {
                         if(!ilObj) ilObj = await get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`);
 
@@ -120,7 +119,7 @@ window.addEventListener('load', () => {
                         totalTime += ilTime;
                         segmentTime += ilTime;
                         levelTimeElement.innerText = ilTime.toFixed(2);
-                        if(ilObj.runs.length === 1)
+                        if(ilObj.runs.length >= 1)  // if there are multiple runs just take the first arbitrarily
                             levelTimeElement.href = ilObj.runs[0].run.weblink;
 
                         ilObj.runs.forEach(run => {
