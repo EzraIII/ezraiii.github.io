@@ -120,9 +120,7 @@ window.addEventListener('load', () => {
                         totalTime += ilTime;
                         segmentTime += ilTime;
                         levelTimeElement.innerText = ilTime.toFixed(2);
-                        if(ilObj.runs.length === 1)
-                            levelTimeElement.href = ilObj.runs[0].run.weblink;
-
+                        levelTimeElement.href = ilObj.runs[0].run.weblink; // if there are multiple runs the first one is taken arbitrarily
                         ilObj.runs.forEach(run => {
                             const playerId = run.run.players[0].id;
                             const playerName = ilObj.players.data.find(p => p.id === playerId).names.international;
@@ -137,9 +135,10 @@ window.addEventListener('load', () => {
                         });
                     }).catch(err => {
                         error = true;
+                        console.error(err);
                         console.log(level);
                         console.log(err.message);
-                        levelTimePairElement.innerText = `${level} : ERROR (${err.message})`;
+                        levelTimeElement.innerText = `ERROR (${err.message})`;
                         document.body.style = "color:#D00;";
                     });
                 }));
