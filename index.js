@@ -111,8 +111,6 @@ window.addEventListener('load', () => {
                 levelPromises.push(get(`${levelUrl}/variables`).then(variableArr => {
                     const variableQueryArr = [];
                     for(let o of variableArr) if(o["is-subcategory"]) variableQueryArr.push(`var-${o.id}=${o.values.default}`);
-                    return variableQueryArr;
-                }).then(variableQueryArr => {
                     return get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`).then(async (ilObj) => {
                         if(!ilObj) ilObj = await get(`https://www.speedrun.com/api/v1/leaderboards/9do8nro1/level/${levelId}/7dg1g3xd?embed=players&top=1&${variableQueryArr.join("&")}`);
 
