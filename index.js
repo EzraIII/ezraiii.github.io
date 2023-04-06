@@ -23,8 +23,8 @@ window.addEventListener('load', () => {
         },
     }
     
-    const loadingTimeEnteringLevel = 0.835;
-    const timeSpentPerTripInLevelSelect = 0.845; 
+    const loadingTimeEnteringLevel = 0.8333333333333333;
+    const timeSpentPerTripInLevelSelect = 0.8333333333333333;
     const levelCount = Object.values(segments).reduce((prev, curr) => prev + curr.levels.length, 0);
     const levelSelectTripsCount = Object.values(segments).reduce((prev, curr) => prev + curr.numberOfTimesInLevelSelect, 0);
     
