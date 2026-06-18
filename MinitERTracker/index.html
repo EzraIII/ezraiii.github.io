@@ -1,0 +1,103 @@
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Minit Entrance Tracker</title>
+    <link rel="stylesheet" href="main.css"/>
+    
+    <script src="games/tooltips.js"></script>
+    <script src="games/minit.js"></script>
+
+    <script src="code/main.js"></script>
+    <script src="code/render.js"></script>
+    <script src="code/input.js"></script>
+    <script src="code/config.js"></script>
+    <script src="code/network.js"></script>
+    <script src="code/automarker.js"></script>
+    <script src="code/tests.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    
+    <meta name="viewport" content="width=device-width, initial-MAP_SCALE=1">
+    <link rel="icon" href="images/icon.png">
+    <!-- Social media metadata -->
+    <meta property="og:title" content="Minit Entrance Tracker"/>
+    <meta property="og:description" content="Tool to track Entrances in Minit Entrance Randomizer"/>
+    <meta name="twitter:card" content="summary_large_image"></meta>
+  </head>
+
+  <body>
+    <article>
+      <canvas id="canvas">Your browser does not support canvas element.</canvas>
+
+      <div id="config_window" class="window window_hidden">
+        <div class="config_content">
+          <span class="close" onclick="HideConfig()">&times;</span>
+          <div class="settings-row">
+            <button onclick="LoadFile()">Load</button>
+            <button onclick="SaveFile()">Save</button>
+            <button onclick="ResetButton()">Reset Tracker</button>
+          </div>
+          <div class="settings-row">
+            <label>Line color:</label>
+            <input type="color" id="line_color" onchange="ChangeLineColor(value)">
+            <button onclick="ResetColor()">Default color</button>
+          </div>
+          <p id="game_buttons"></p> <!-- They get created in code -->
+          <p id="loading_game_text">Loading game...</p>
+          <p id="config_networktoggle" class="config_toggle" onclick="ShowConfigNetwork()">+ Show network options (don't show on stream)</p>
+          <div id="config_network" class="config_hidden">
+            <hr>
+            <p class="config_toggle" onclick="HideConfigNetwork()">- Hide networking options</p>
+            <p>
+              <b> Your ID: </b><b id="network_id">---</b>
+              <b id="network_name"> | Username:   <input type="text" id="networkinput_name" onfocusout="ChangeUsername(value)" onkeydown="PressedEnter(event)"></b>
+            </p>
+            <p id="network_connectto"><b>Connect to ID: <input type="text" id="networkinput_connect"></b>
+              <button onclick="ConnectButton()">Connect</button></p>
+            <p id="network_connections" class="config_hidden">Connected!</p>
+            <p id="network_warning"><i>Only one user should act as a host, all users should connect to the same ID. If someone can't connect, switch to Chrome (including the host).</i></p>
+          </div>
+        </div>
+      </div>
+
+      <div id="help_window" class="window window_hidden">
+        <div class="config_content">
+          <span class="close" onclick="HideHelp()">&times;</span>
+          <div id="help_v1">
+            <h1>Controls</h1>
+            Warp linking:
+            <ul>
+              <li><b>Left click</b> on a warp to start linking. Then, change location, click a mark to set it or another warp to create a link. <b>Right click</b> to cancel this state.</li>
+              <li><b>Right click</b> on any known warp to undo and mark it as unknown (if it's a link, it will mark the other end as unknown too).</li>
+            </ul>
+            <br>
+            Location changing:
+            <ul>
+              <li><b>Left click</b> on the map to change current location.</li>
+              <li><b>Left click twice</b> on a linked warp to change to the linked location.</li>
+            </ul>
+            <br>
+            Progress tracking:
+            <ul>
+              <li><b>Right click</b> on any highlighted mark to cycle through all the maps with the mark in it.</li>
+              <li><b>Left click</b> on the progress tracker to mark an objective as completed.</li>
+            </ul>
+            <br>
+            Other:
+            <ul>
+              <li><b>Left click</b> on an empty space in an overcrowded location's map to check its layout.</li>
+              <li><b>Left click</b> the remaining warps number to highlight all warps & locations left to check.</li>
+            </ul>
+            <br><u>The progress tracker can be used to mark warps too</u>.
+          </div>
+        </div>
+      </div>
+
+    </article>
+  </body>
+
+  <script type="text/javascript">init();</script>
+
+</html>

@@ -1,0 +1,189 @@
+:root {
+    --bg-color:   #333333;
+    --text-color: #eeeeee;
+    --nav-color:  #b3b3b3;
+    --link-color: #34bcdf;
+
+    --color1: rgb(41,  35,  23);
+    --color2: rgb(67,  53,  28);
+    --color3: rgb(105, 65,  78);
+    --color4: rgb(127, 95,  69);
+    --color5: rgb(144, 98,  72);
+    --color6: rgb(163, 97,  67);
+    --color7: rgb(171, 121, 81);
+    --color8: rgb(247, 225, 181);
+    --blue:   rgb(48,  161, 151);
+}
+
+@font-face {
+    font-family: Avenir;
+    src: url(fonts/avenir_ff/AvenirLTStd-Book.otf)
+}
+
+@font-face {
+    font-family: Avenir_Bold;
+    src: url(fonts/avenir_ff/AvenirLTStd-Black.otf)
+}
+
+@font-face {
+    font-family: GameBoy_Font;
+    src: url(fonts/PKMN_RBYGSC.ttf)
+}
+
+/*@font-face {
+    font-family: GameBoyAdvance_Font;
+    src: url(fonts/pokemon_fire_red.ttf)
+}*/
+
+@font-face {
+    font-family: NDS_Font;
+    src: url(fonts/ndsbios_memesbruh03.ttf)
+}
+
+html {
+    font-size: 18px;
+    font-family: "Avenir", serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 5px;
+}
+
+a {
+    color: var(--link-color);
+}
+a:hover {
+    color: var(--text-color);
+}
+
+li, ul {
+    margin: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+div.settings-row {
+    margin-bottom: 10px;
+}
+
+.window {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+
+    padding-top: 30px; /* Location of the box */
+    padding-bottom: 3000px; /* Location of the box */
+}
+.window_hidden {
+    display: none;
+}
+.config_content {
+    background-color: var(--bg-color);
+    border: 1px var(--color3) solid;
+
+    margin: auto;
+    margin-left: 20px;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+}
+.config_hidden {
+    visibility: hidden;
+    position: fixed;
+}
+.config_toggle {
+    color: var(--color7);
+}
+.config_toggle:hover {
+    color: var(--color5);
+    text-decoration: none;
+    cursor: pointer;
+}
+button.load_button {
+    float: left;
+    margin-right: 5px;
+}
+
+button {
+    background-color: var(--color1);
+    color: var(--text-color);
+    border: 1px solid var(--color7);
+    border-radius: 10%;
+    cursor: pointer;
+}
+button:hover {
+    background-color: var(--color2);
+}
+button:disabled,
+button[disabled]{
+  border: 1px solid var(--color3);
+  background-color: var(--color2);
+  color: var(--color4);
+  cursor: auto;
+}
+input {
+    font-size: 16px;
+    font-family: "Avenir", serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    
+    margin-right: 10px;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+input[type="color"] {
+    border: 1px solid var(--color3);
+    background-color: var(--color2);
+    color: var(--color4);
+    cursor: auto;
+    margin-right: 5;
+}
+input[type="color"]:hover {
+    cursor: pointer;
+}
+
+label {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+.close {
+    color: var(--color7);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover {
+    color: var(--color5);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.social-media {
+    float: right;
+    padding-left: 10px;
+}
+.social-media-image {
+    border: 0px;
+}
+
+.credit_description {
+    margin-top: 6px;
+}
+h1 {
+    text-decoration: underline;
+}
+h1.changelog_header {
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
